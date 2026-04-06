@@ -1,14 +1,29 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
+const requiredKeys = [
+  'VITE_FIREBASE_API_KEY',
+  'VITE_FIREBASE_AUTH_DOMAIN',
+  'VITE_FIREBASE_PROJECT_ID',
+  'VITE_FIREBASE_STORAGE_BUCKET',
+  'VITE_FIREBASE_MESSAGING_SENDER_ID',
+  'VITE_FIREBASE_APP_ID'
+];
+
+const missingKeys = requiredKeys.filter((key) => !import.meta.env[key]);
+
+if (missingKeys.length > 0) {
+  throw new Error(`Missing Firebase env vars: ${missingKeys.join(', ')}`);
+}
+
 const firebaseConfig = {
-  apiKey: "FAPI",
-  authDomain: "inventory-predictor-2c4a3.firebaseapp.com",
-  projectId: "inventory-predictor-2c4a3",
-  storageBucket: "inventory-predictor-2c4a3.firebasestorage.app",
-  messagingSenderId: "1007685266706",
-  appId: "1:1007685266706:web:79e9de1dcec38d70c317cb",
-  measurementId: "G-KGNKVBQSBC"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);

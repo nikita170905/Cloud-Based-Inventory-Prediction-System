@@ -1,88 +1,133 @@
 # Cloud-Based Inventory Prediction System
 
-This project is a professional-grade, smart inventory management platform designed to shift from reactive stock-keeping to **proactive forecasting**. It leverages cloud-native technologies to track daily consumption patterns and predict exactly when supplies will be exhausted using mathematical modeling.
+Inventory dashboard built with Vite (frontend), Firebase Firestore (data), and a lightweight Node/Express API (backend).
 
----
+This project helps move inventory management from reactive stock handling to proactive forecasting using weighted usage trends.
 
-## 🚀 Key Features
+## Key Features
 
-* **Real-time Cloud Sync:** Fully integrated with **Firebase Firestore** to ensure data is persistent across devices and updates instantly via live listeners (`onSnapshot`).
-* **Predictive Analytics:** Uses a **Weighted Moving Average (WMA)** algorithm to prioritize recent usage data over older records for highly accurate stock-out predictions.
-* **Visual Data Insights:** Integrated **Chart.js** modules render historical usage trends directly on product cards.
-* **Automated Data Seeding:** A dedicated Node.js script (`seed.js`) that processes large CSV datasets (like `FashionDataset.csv`) to pre-load the database with realistic scale.
-* **Enterprise Utility:** Includes bulk deletion, custom alert thresholds (Low Stock/Urgent Refill), skeleton loading states, and CSV report exporting.
+- Real-time cloud sync with Firebase Firestore.
+- Weighted moving average prediction for stock-out estimation.
+- Chart.js visual usage trends.
+- CSV data seeding script for quick initial setup.
+- Bulk actions and stock alert status (Healthy, Low Stock, Urgent Refill).
 
----
+## Tech Stack
 
-## 🛠️ Tech Stack
+- Frontend: Vite + Vanilla JavaScript
+- Backend: Node.js + Express
+- Database: Firebase Firestore
+- Visualization: Chart.js
+- CSV parsing: PapaParse
 
-* **Bundler:** Vite
-* **Language:** Vanilla JavaScript (ES Modules)
-* **Database:** Firebase Firestore (v12 SDK)
-* **Visualization:** Chart.js
-* **Data Parsing:** Papaparse (for CSV handling)
+## Project Structure
 
----
+- Frontend: [index.html](index.html), [src/main.js](src/main.js)
+- Backend API: [backend/server.js](backend/server.js)
+- Render Blueprint: [render.yaml](render.yaml)
 
-## 📂 Project Structure
+## Local Run
 
-```text
-├── index.html          # Main dashboard entry point
-├── seed.js             # CSV-to-Firestore data seeder
-├── src/
-│   ├── main.js         # UI Controller & Firestore subscribers
-│   ├── firebase.js     # Cloud configuration
-│   ├── prediction.js   # WMA & depletion logic
-│   ├── product.js      # Firestore CRUD operations
-│   ├── chart.js        # Visualization logic
-│   ├── export.js       # CSV report generator
-│   └── style.css       # Modern UI design
-└── FashionDataset.csv  # Sample retail data for seeding
-```
+Create a local env file before running the app:
 
-## 🧠 Prediction Logic
+1. Copy `.env.example` to `.env`
+2. Fill all Firebase values in `.env`
 
-The "Brain" of this system relies on the `calculateWeightedAverageUsage` function. Unlike a simple average, it assigns increasing weights to recent entries to adapt to changing behavior.
+`.env` is ignored by git and will not be committed.
 
-The core depletion formula is:
+### 1) Frontend
 
-$$Remaining Days = \frac{Current Stock}{Weighted Average Usage}$$
-
-If the predicted `remainingDays` is less than **3**, the system automatically triggers an **Urgent Refill** status.
-
----
-
-## ⚙️ Setup & Installation
-
-### 1. Prerequisites
-Ensure you have **Node.js** installed on your machine.
-
-### 2. Installation
-Clone the repository and install dependencies:
 ```bash
 npm install
-```
-
-### 3. Database Configuration
-Update the firebaseConfig in both src/firebase.js and seed.js with your unique Firebase credentials.
-
-### 4. Data Seeding (Optional)
-To populate your dashboard with the sample retail dataset:
-```bash
-npm run seed
-```
-
-### 5. Start Development
-Launch the local development server:
-```bash
 npm run dev
 ```
 
----
+### 2) Backend
 
+```bash
+cd backend
+npm install
+npm start
+```
 
-📈 Future Roadmap
-* **Advanced AI Integration:** Replace WMA with a Linear Regression model for seasonal trend forecasting.
-* **Authentication:** Multi-user support with secure Firebase Auth login.
-* **Mobile App:** Conversion to a Progressive Web App (PWA) for native mobile inventory tracking.
+Backend runs on `http://localhost:10000` by default.
 
+## Deploy Entire Project On Render
+
+This repo is configured for Render Blueprint deployment using [render.yaml](render.yaml).
+
+### What gets deployed
+
+- `ccl-frontend`: Static site (Vite build output in `dist`)
+- `ccl-backend`: Node web service (`backend/server.js`)
+
+### Steps
+
+1. Push this repository to GitHub.
+2. Open Render Dashboard.
+3. Click **New** -> **Blueprint**.
+4. Connect your GitHub repo.
+5. Render detects [render.yaml](render.yaml) and shows two services.
+6. Open the `ccl-frontend` service settings and set all required environment variables:
+	- VITE_FIREBASE_API_KEY
+	- VITE_FIREBASE_AUTH_DOMAIN
+	- VITE_FIREBASE_PROJECT_ID
+	- VITE_FIREBASE_STORAGE_BUCKET
+	- VITE_FIREBASE_MESSAGING_SENDER_ID
+	- VITE_FIREBASE_APP_ID
+	- VITE_FIREBASE_MEASUREMENT_ID
+7. Click **Apply** to create and deploy both.
+8. If needed, trigger a manual redeploy after setting frontend env vars.
+
+### Health Check
+
+After deployment, verify backend health:
+
+`GET https://<your-backend-service>.onrender.com/health`
+
+Expected response:
+
+```json
+{ "ok": true, "service": "ccl-backend" }
+```
+
+## Backend API
+
+### POST `/api/predict`
+
+Request body:
+
+```json
+{
+	"currentStock": 120,
+	"minThreshold": 20,
+	"usageHistory": [4, 5, 4, 6, 5]
+}
+```
+
+Response body:
+
+```json
+{
+	"currentStock": 120,
+	"minThreshold": 20,
+	"weightedAverageUsage": 5.133333333333334,
+	"remainingDays": 23.376623376623378,
+	"alert": {
+		"label": "Healthy",
+		"tone": "ok"
+	}
+}
+```
+
+## Notes
+
+- The frontend currently reads/writes inventory directly from Firebase Firestore.
+- The backend service is deployable independently and can be used for server-side prediction APIs.
+- Never commit `.env` to source control. Keep secrets only in local `.env` and Render environment settings.
+
+## Future Improvements
+
+- Move prediction reads fully through backend API endpoints.
+- Add authentication and role-based access.
+- Add PWA support for mobile-first inventory operations.

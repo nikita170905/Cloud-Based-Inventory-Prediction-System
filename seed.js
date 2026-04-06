@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import fs from 'node:fs';
 import path from 'node:path';
 import Papa from 'papaparse';
@@ -14,15 +15,29 @@ import {
 // You can change SAMPLE_SIZE by passing a number, e.g. `npm run seed -- 50`.
 const SAMPLE_SIZE = Math.min(Math.max(Number(process.argv[2] || 40), 30), 50);
 
-// Keep this in sync with src/firebase.js.
+const requiredEnvKeys = [
+  'FIREBASE_API_KEY',
+  'FIREBASE_AUTH_DOMAIN',
+  'FIREBASE_PROJECT_ID',
+  'FIREBASE_STORAGE_BUCKET',
+  'FIREBASE_MESSAGING_SENDER_ID',
+  'FIREBASE_APP_ID'
+];
+
+const missingEnvKeys = requiredEnvKeys.filter((key) => !process.env[key]);
+
+if (missingEnvKeys.length > 0) {
+  throw new Error(`Missing Firebase env vars for seed script: ${missingEnvKeys.join(', ')}`);
+}
+
 const firebaseConfig = {
-  apiKey: 'FAPI',
-  authDomain: 'inventory-predictor-2c4a3.firebaseapp.com',
-  projectId: 'inventory-predictor-2c4a3',
-  storageBucket: 'inventory-predictor-2c4a3.firebasestorage.app',
-  messagingSenderId: '1007685266706',
-  appId: '1:1007685266706:web:79e9de1dcec38d70c317cb',
-  measurementId: 'G-KGNKVBQSBC'
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID || undefined
 };
 
 function randomInt(min, max) {
