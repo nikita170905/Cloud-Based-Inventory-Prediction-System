@@ -35,7 +35,7 @@ app.innerHTML = `
       <form id="add-product-form" class="grid-form">
         <label>
           Product Name
-          <input name="name" type="text" placeholder="Example: Rice Bag" required />
+          <input name="name" type="text" placeholder="Example: Regular top" required />
         </label>
         <label>
           Category

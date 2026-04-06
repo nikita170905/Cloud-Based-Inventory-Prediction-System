@@ -16,7 +16,7 @@ const SAMPLE_SIZE = Math.min(Math.max(Number(process.argv[2] || 40), 30), 50);
 
 // Keep this in sync with src/firebase.js.
 const firebaseConfig = {
-  apiKey: 'AIzaSyBixhApLvbn-sLNUVKXIl2_WxZAiEQFx7s',
+  apiKey: 'FAPI',
   authDomain: 'inventory-predictor-2c4a3.firebaseapp.com',
   projectId: 'inventory-predictor-2c4a3',
   storageBucket: 'inventory-predictor-2c4a3.firebasestorage.app',

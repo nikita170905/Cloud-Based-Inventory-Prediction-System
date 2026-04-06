@@ -1,9 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
-// Paste your Firebase config values below.
 const firebaseConfig = {
-  apiKey: "AIzaSyBixhApLvbn-sLNUVKXIl2_WxZAiEQFx7s",
+  apiKey: "FAPI",
   authDomain: "inventory-predictor-2c4a3.firebaseapp.com",
   projectId: "inventory-predictor-2c4a3",
   storageBucket: "inventory-predictor-2c4a3.firebasestorage.app",
