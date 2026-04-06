@@ -12,7 +12,6 @@ services:
   - type: web
     name: ccl-frontend
     runtime: static
-    plan: free
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
     autoDeploy: true
